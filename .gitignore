@@ -1,0 +1,27 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# C extensions
+*.so
+
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
+eggs/
+
+# Virtual environments
+venv/
+*.venv
+
+# Jupyter
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+*.iml
+
+# Raw dataset
+dataset/
