@@ -1,0 +1,24 @@
+numpy
+matplotlib
+scikit-learn
+jupyter
+torch
+torchvision
+superimport
+
+# requirements.txt of pyprobml
+jaxlib
+jax
+jupyter
+matplotlib
+numpy
+requests
+scipy
+seaborn
+scikit-learn
+h5py
+pandas
+graphviz
+arviz
+pyyaml
+idx2numpy
