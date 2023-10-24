@@ -22,3 +22,4 @@ graphviz
 arviz
 pyyaml
 idx2numpy
+tqdm
