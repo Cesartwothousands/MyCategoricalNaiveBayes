@@ -1,8 +1,12 @@
 from sklearn.base import BaseEstimator, ClassifierMixin
 import numpy as np
 from models.load_data import load_data
+import warnings
 
-
+'''
+warnings.simplefilter("ignore", RuntimeWarning)
+warnings.simplefilter("ignore", UserWarning)
+'''
 class CategoricalNaiveBayes(BaseEstimator, ClassifierMixin):
     def __init__(self, alpha=1, beta=1, method="MLE"):
         self.alpha = alpha  # hyperparameter for MAP estimation of class probabilities
@@ -21,23 +25,25 @@ class CategoricalNaiveBayes(BaseEstimator, ClassifierMixin):
     def fit(self, X, y):
         self.classes_ = np.unique(y)
 
-        # Estimate class probabilities
         class_counts = np.array([np.sum(y == c) for c in self.classes_])
         total_samples = len(y)
 
+        # Estimate class probabilities
         if self.method == "MLE":
-            self.class_probs_ = class_counts / total_samples
+            self.class_probs_ = [np.mean(y == c) for c in self.classes_]
         elif self.method == "MAP":
-            self.class_probs_ = (class_counts + self.alpha - 1) / (total_samples + len(self.classes_) * self.alpha)
+            self.class_probs_ = [(np.sum(y == c) + self.alpha - 1) /
+                                 (total_samples + len(self.classes_) * self.alpha)
+                                 for c in self.classes_]
+        else:
+            raise ValueError("Invalid method. Use either 'MLE' or 'MAP'.")
 
         # Estimate pixel probabilities
         if self.method == "MLE":
-            self.class_probs_ = [np.mean(y == c) for c in self.classes_]
             self.pixel_probs_ = {c: np.mean(X[y == c], axis=0) for c in self.classes_}
         elif self.method == "MAP":
-            self.class_probs_ = [(np.sum(y == c) + self.alpha - 1) / (len(y) + len(self.classes_) * (self.alpha - 1))
-                                 for c in self.classes_]
-            self.pixel_probs_ = {c: (np.sum(X[y == c], axis=0) + self.beta - 1) / (np.sum(y == c) + 2 * (self.beta - 1))
+            self.pixel_probs_ = {c: (np.sum(X[y == c], axis=0) + self.beta - 1) /
+                                    (np.sum(y == c) + 2 * self.beta - 2)
                                  for c in self.classes_}
 
     # Task 2: Build a Predict Method using MLE and MAP for model parameters
@@ -65,6 +71,9 @@ class CategoricalNaiveBayes(BaseEstimator, ClassifierMixin):
         return [self.classes_[np.argmax(probs)] for probs in all_probs]
 
     # Task 3: Build a Score Method using MLE and MAP for model parameters
+    #########################################
+    # y Can be deleted if not used
+    #########################################
     def score(self, X, y):
         # Make predictions to get the latest probabilities
         self.predict(X)
@@ -75,11 +84,14 @@ class CategoricalNaiveBayes(BaseEstimator, ClassifierMixin):
 
         return avg_log_likelihood
 
-
+'''
 # To load 'balanced' data:
 X_train, y_train = load_data('balanced', 'train')
 X_test, y_test = load_data('balanced', 'test')
+X_train = X_train[:11280]
+y_train = y_train[:11280]
 print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+
 # Initialize the Naive Bayes Classifier
 clf_mle = CategoricalNaiveBayes(method="MLE")
 clf_map = CategoricalNaiveBayes(method="MAP")
@@ -99,7 +111,9 @@ for n_samples in [10, 100, 250]:
     score_mle = clf_mle.score(X_subset, y_subset)
     score_map = clf_map.score(X_subset, y_subset)
 
-    # print(f"Sample of subset: {y_subset}")
-    # print(f"Predictions of subset: {predictions_mle}")
+    print(f"Sample of subset: {y_subset}")
+    print(f"Predictions of subset: {predictions_mle}")
+    print(f"Predictions of subset: {predictions_map}")
     print(f"Score for MLE {n_samples} samples: {score_mle:.4f}")
     print(f"Score for MAP {n_samples} samples: {score_map:.4f}")
+'''
