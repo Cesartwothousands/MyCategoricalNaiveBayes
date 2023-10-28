@@ -1,2 +1,3 @@
 /models/*.ipynb linguist-detectable=false
 /models/*.ipynb linguist-generated=true
+*.ipynb linguist-detectable=false
